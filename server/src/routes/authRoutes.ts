@@ -11,8 +11,31 @@ import {
   logout,
   generateHandoffToken,
 } from '../services/authService.js';
+import { verifyPiAccessToken } from '../services/piAuthService.js';
 
 const router = Router();
+
+// POST /auth/pi/verify — exchange a Pi SDK access token for an Agrocylo session.
+// The supplied token is sent only to Pi's /me endpoint and is never logged or
+// returned to the client.
+router.post('/pi/verify', authRateLimiter, async (req: Request, res: Response) => {
+  try {
+    const { accessToken } = req.body as { accessToken?: unknown };
+    if (typeof accessToken !== 'string') {
+      return sendProblem(
+        res,
+        req,
+        new ApiError(400, 'Bad Request', 'accessToken is required')
+      );
+    }
+    const session = await verifyPiAccessToken(accessToken);
+    return res.status(200).json(session);
+  } catch (err) {
+    if (err instanceof ApiError) return sendProblem(res, req, err);
+    logger.error('Pi identity verification failed', err);
+    return sendProblem(res, req, new ApiError(500, 'Internal Server Error', 'Unexpected error'));
+  }
+});
 
 // POST /auth/nonce
 router.post(

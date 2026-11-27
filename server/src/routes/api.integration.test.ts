@@ -41,6 +41,10 @@ vi.mock('../services/authService.js', () => ({
   logout: vi.fn(),
 }));
 
+vi.mock('../services/piAuthService.js', () => ({
+  verifyPiAccessToken: vi.fn(),
+}));
+
 vi.mock('../services/productService.js', () => ({
   listProducts: vi.fn(),
   getProductById: vi.fn(),
@@ -84,6 +88,7 @@ import * as productService from '../services/productService.js';
 import * as cartService from '../services/cartService.js';
 import * as notificationService from '../services/notificationService.js';
 import * as authService from '../services/authService.js';
+import * as piAuthService from '../services/piAuthService.js';
 import * as profileService from '../services/profileService.js';
 import * as graphqlGatewayService from '../services/graphqlGatewayService.js';
 import * as groupOrderService from '../services/groupOrderService.js';
@@ -99,6 +104,29 @@ describe('Health endpoint', () => {
 
 describe('Auth endpoints', () => {
   beforeEach(() => vi.resetAllMocks());
+
+  it('POST /auth/pi/verify rejects a missing Pi access token', async () => {
+    const res = await request(app).post('/auth/pi/verify').send({});
+    expect(res.status).toBe(400);
+  });
+
+  it('POST /auth/pi/verify returns the verified Agrocylo session', async () => {
+    vi.mocked(piAuthService.verifyPiAccessToken).mockResolvedValue({
+      accessToken: 'app-access-token',
+      refreshToken: 'app-refresh-token',
+      walletAddress: 'pi:verified-uid',
+      user: { uid: 'verified-uid', username: 'Pioneer' },
+    });
+    const res = await request(app)
+      .post('/auth/pi/verify')
+      .send({ accessToken: 'pi-access-token' });
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({
+      walletAddress: 'pi:verified-uid',
+      user: { uid: 'verified-uid', username: 'Pioneer' },
+    });
+    expect(piAuthService.verifyPiAccessToken).toHaveBeenCalledWith('pi-access-token');
+  });
 
   it('POST /auth/nonce returns 400 when walletAddress is missing', async () => {
     const res = await request(app).post('/auth/nonce').send({});

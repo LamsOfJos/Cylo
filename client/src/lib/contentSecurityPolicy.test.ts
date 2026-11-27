@@ -75,7 +75,15 @@ describe("buildContentSecurityPolicy", () => {
       env,
     });
 
-    expect(policy).toContain("frame-ancestors 'none'");
+    expect(policy).toContain(
+      "frame-ancestors 'self' https://*.pinet.com https://*.minepi.com",
+    );
+    expect(parseDirectives(policy).get("connect-src")).toContain(
+      "https://socialchain.app",
+    );
+    expect(parseDirectives(policy).get("script-src")).toContain(
+      "https://sdk.minepi.com",
+    );
     expect(policy).toContain("object-src 'none'");
     expect(policy).toContain("base-uri 'self'");
   });

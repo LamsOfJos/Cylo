@@ -59,6 +59,7 @@ export function buildContentSecurityPolicy({
 
   const connectSources = unique([
     "'self'",
+    "https://socialchain.app",
     originOf(apiUrl),
     websocketOriginOf(apiUrl),
     originOf(rpcUrl),
@@ -85,6 +86,7 @@ export function buildContentSecurityPolicy({
   const scriptSources = [
     "'self'",
     `'nonce-${nonce}'`,
+    "https://sdk.minepi.com",
     "'strict-dynamic'",
     "'wasm-unsafe-eval'",
     ...(isDevelopment ? ["'unsafe-eval'"] : []),
@@ -99,7 +101,7 @@ export function buildContentSecurityPolicy({
     `connect-src ${connectSources.join(" ")}`,
     "worker-src 'self' blob:",
     "object-src 'none'",
-    "frame-ancestors 'none'",
+    "frame-ancestors 'self' https://*.pinet.com https://*.minepi.com",
     "base-uri 'self'",
     "form-action 'self'",
   ].join("; ");

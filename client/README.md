@@ -137,14 +137,15 @@ passes the same policy to Next.js in the request and browser response. Next.js
 applies that nonce to its framework and bootstrap scripts. Development alone
 adds `'unsafe-eval'` and the page's exact WebSocket origin for Fast Refresh;
 production keeps those out of the policy. API, backend WebSocket, Soroban RPC,
-Horizon, analytics, and Sentry connections are limited to origins derived from
-their configured URLs.
+Horizon, analytics, Sentry, and Pi SDK connections are limited to configured
+origins or Pi's SDK/API origins.
 
 Because nonces are request-specific, the root layout calls `connection()` and
 all marketplace pages render dynamically. Static optimization, ISR, and shared
 CDN HTML caching are therefore unavailable for this app unless the CSP strategy
-changes. Framing remains denied by both `frame-ancestors 'none'` and
-`X-Frame-Options: DENY`.
+changes. Pi Browser embedding is allowed only from the PiNet and Pi Developers
+origins in `frame-ancestors`; `X-Frame-Options` is omitted because it would
+override the Pi embedding policy.
 
 
 ### Missing contract ID errors

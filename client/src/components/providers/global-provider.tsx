@@ -15,6 +15,7 @@ import QueryProvider from "@/components/QueryProvider";
 import WalletProviderWrapper from "@/components/WalletProviderWrapper";
 import { AnalyticsProvider } from "@/context/AnalyticsContext";
 import { TransactionFeedbackProvider } from "@/context/TransactionFeedbackContext";
+import { PiAuthProvider } from "@/context/PiAuthContext";
 
 interface GlobalProviderProps {
   children: ReactNode;
@@ -56,17 +57,19 @@ const GlobalProvider: FC<GlobalProviderProps> = ({ children, nonce }) => {
           <AnalyticsProvider>
             <AnalyticsInit />
             <TransactionFeedbackProvider>
-              <WalletProviderWrapper>
-                <NextJsToploader
-                  showSpinner={false}
-                  showForHashAnchor={false}
-                  showAtBottom={false}
-                  color="var(--primary)"
-                />
-                {children}
-                <ConsentBanner />
-                <Toaster richColors />
-              </WalletProviderWrapper>
+              <PiAuthProvider>
+                <WalletProviderWrapper>
+                  <NextJsToploader
+                    showSpinner={false}
+                    showForHashAnchor={false}
+                    showAtBottom={false}
+                    color="var(--primary)"
+                  />
+                  {children}
+                  <ConsentBanner />
+                  <Toaster richColors />
+                </WalletProviderWrapper>
+              </PiAuthProvider>
             </TransactionFeedbackProvider>
           </AnalyticsProvider>
         </QueryProvider>

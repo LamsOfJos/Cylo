@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { headers } from "next/headers";
 import { connection } from "next/server";
 
@@ -57,6 +58,13 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
+      <head>
+        <Script
+          src="https://sdk.minepi.com/pi-sdk.js"
+          strategy="beforeInteractive"
+          nonce={nonce}
+        />
+      </head>
       <body
         className={`${montserratAlternates.variable} flex min-h-dvh flex-col bg-background font-sans antialiased`}
       >

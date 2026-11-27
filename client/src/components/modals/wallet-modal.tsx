@@ -14,6 +14,7 @@ import {
 import { useWallet } from "@/hooks/useWallet";
 import { WALLET_ADAPTERS } from "@/lib/walletAdapters";
 import { Separator } from "@/components/ui/separator";
+import { usePiAuth } from "@/context/PiAuthContext";
 
 function isMobileBrowser(): boolean {
   if (typeof navigator === "undefined") return false;
@@ -22,6 +23,7 @@ function isMobileBrowser(): boolean {
 
 export default function WalletModal() {
   const { connect, loading, error } = useWallet();
+  const piAuth = usePiAuth();
   const [open, setOpen] = useState(false);
   const [connectingId, setConnectingId] = useState<string | null>(null);
   const onMobile = isMobileBrowser();
@@ -108,8 +110,38 @@ export default function WalletModal() {
 
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
-          <DialogTitle>Connect a Wallet</DialogTitle>
+          <DialogTitle>Sign in or connect a wallet</DialogTitle>
         </DialogHeader>
+
+        {piAuth.pioneer ? (
+          <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
+            <div className="min-w-0">
+              <p className="text-sm font-medium">Signed in with Pi</p>
+              <p className="truncate text-xs text-muted-foreground">
+                @{piAuth.pioneer.username}
+              </p>
+            </div>
+            <Button type="button" variant="outline" size="sm" onClick={piAuth.signOut}>
+              Sign out
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <Button
+              type="button"
+              className="w-full"
+              disabled={piAuth.loading}
+              onClick={() => void piAuth.signIn()}
+            >
+              {piAuth.loading ? "Signing in with Pi…" : "Sign in with Pi"}
+            </Button>
+            {piAuth.error && (
+              <p className="text-sm text-destructive" role="alert">
+                {piAuth.error}
+              </p>
+            )}
+          </div>
+        )}
 
         {error && (
           <div className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">
@@ -117,6 +149,8 @@ export default function WalletModal() {
             <span>{error}</span>
           </div>
         )}
+
+        <Separator />
 
         {onMobile && mobileAdapters.length > 0 && (
           <div className="space-y-2">

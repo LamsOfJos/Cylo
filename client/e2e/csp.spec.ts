@@ -46,7 +46,9 @@ test("hydrates an interaction without unexpected CSP violations", async ({ page 
     expect(policy).not.toContain("'unsafe-eval'");
     expect(policy).not.toContain("ws://localhost:3000");
   }
-  expect(policy).toContain("frame-ancestors 'none'");
+  expect(policy).toContain(
+    "frame-ancestors 'self' https://*.pinet.com https://*.minepi.com",
+  );
 
   await page.waitForTimeout(1_000);
   expect(await page.evaluate(() => window.__cspViolations ?? [])).toEqual([]);
