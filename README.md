@@ -1,119 +1,24 @@
-# AGROCYLO🌾
-### Overview
+# AGROCYLO 🌾
 
-Agrocylo is an Agro-DeFi platform. The aim is to make life easier for farmers (especially homegrown/urban), enabling exchange of agro-goods and services using an escrow system. It eliminates middlemen, allows peer-to-peer trade between farmers and consumers, and gives both parties access to Blockchain, Native DeFi, and Digital services. 
+Agrocylo is a farmer-to-consumer marketplace. For Pi Next, the product focus is helping Pioneers discover local farm goods, contact sellers, place orders, and pay in Pi. The planned Pi integration uses Pi Authentication for sign-in and Pi Payments for checkout, with the server verifying users and payment completion.
 
-Each purchase is secured using an escrow mechanism: funds are locked when a customer places an order and are released only after the buyer confirms receipt of goods. This guarantees protection for both parties while maintaining full user custody.
+The Pi Next app will use Pi's SDK and Platform API. Pi payments are confirmed through the app server; the Pi checkout flow does not use the repository's Stellar wallet signing or Soroban escrow contracts. Campaign investing, pooled baskets, and escrow settlement depend on those existing contracts and are outside the Pi Next marketplace scope until they have a Pi-specific design.
 
-**Configuration:** [`docs/deployment/environment.md`](docs/deployment/environment.md) is the authoritative environment-variable reference for all four apps and the contract set, including secret-management and key-rotation procedures. Drift between each app's `.env.example` and its code is caught by `scripts/check-env-drift.js` in CI.
+See [Pi Next scope](docs/PI_NEXT_SCOPE.md) for the cut list, retained product features, integration requirements, and official references. The repository still contains the earlier Stellar/Soroban implementation; its technical documentation describes that legacy system and should not be read as the Pi app architecture.
 
-### ✨ Features
-* On-chain escrow settlement - Funds are locked in an escrow smart contract until buyers confirm receipt of goods.
+### Pi Next product focus
 
-* Non-custodial payments - Users retain full control of funds at all times.
+- Farmer and product discovery, seller profiles, and agricultural information.
+- Order placement, status tracking, and buyer-seller communication.
+- Pi sign-in verified by Agrocylo's backend.
+- Pi checkout with server-side payment approval, completion, and idempotent order fulfillment.
+- A mobile-friendly app that supports access through Pi Browser and PiNet.
 
-* Peer-to-peer Farmer-Consumer Marketplace - Farmers sell directly to consumers without middlemen, retaining price control and increasing income.
+### Existing workspace
 
-* Token-based payment - Supports stablecoin and token payments (USDC and XLM)
+The active repository includes two Next.js clients and two API services, along with a Rust/Soroban contract suite and Stellar-specific indexing and deployment tools. For the Pi Next build, only the marketplace journeys and the services they need belong in the app runtime. The Soroban components remain in the repository as legacy code while those paths are migrated.
 
-* Buyer-confirmed settlement - Funds are never released to farmer/seller until the buyer confirms receipt of goods.
-
-* Unlimited parallel transactions - Unlimited concurrent trades can be carried out at a time, and each transaction is tracked by ID, time, status, amount, and associated addresses.
-
-* Order indexing by role - Buyers can view all their purchases and order statuses. Farmers can track incoming orders and pending payments.
-
-* Real-time updates and notifications - On-chain events are indexed and transmitted off-chain to deliver real-time order updates and notifications.
-
-### 🎯 Why Agrocylo
-* Wider market reach and ease of payment - Small scale farmers face limited market access and fragmented payment systems.
-* Post-harvest loss reduction - Farmers incure losses due to lack of storage facilities and limited market access 
-* Higher farmer profit and lower consumer cost - enabled by peer-to-peer interaction between farmer and consumer (Absence of middleman).
-* Digital transformation of agriculture - price discovery tools, demand/supply aggregation tools to aid data-driven production.
-
-###  Target Users
-a. Primary users
-    * Farmers/Producers
-    * Consumers/buyers
-
-b. Secondary stakeholders
-    * Platform operators: analytics, monitoring and support.
-    * NGO’s, cooperatives or government programs promoting farmer inclusion
-
-
-### 🏗 COMPONENTS (DEVELOPMENT) 
-
-#### Smart Contracts
-
-Escrow creation
-
-Order lifecycle management
-
-Dispute handling 
-
-#### Frontend
-
-Farmer dashboards
-
-Consumer checkout & order tracking
-
-Wallet integration
-
-#### Off-Chain Services
-
-Event indexing
-
-Notifications (email, push, in-app)
-
-Analytics and reporting
-
-### 🧱 Architecture
-Frontend (Web / Mobile)
-
-   ↓
-Smart Contracts (Escrow)
-
-   ↓
-Stellar Network
-
-   ↓
-Off-Chain Indexers & Notification Services
-
-┌─────────────────┐
-│   FRONTEND      │
-│ (Web/Mobile)    │
-└────────┬────────┘
-         │
-         ├
-         │
-         └---------─┐
-                    │
-               ┌────▼───────────┐
-               │Smart Contracts │
-               │ (Soroban Rust) │----------─┐
-               └────┬───────────┘           |
-                                            │
-                                       ┌────▼───────────┐
-                                       │   Backend      |
-                                       │                │
-                                       └────────────────┘
-
-### 🛠️ Tech Stack
-
-Network: Stellar Testnet
-
-Smart Contracts: Rust (Soroban)
-
-Frontend: Next.js (React)
-
-Wallets: Freighter 
-
-Indexing: Custom event indexer / Subgraph-style service
-
-Notifications: In-app (DB-persisted, delivered via REST API)
-
-### 📦 Project Goals
-
-Enable swift, fair, and transparent trade
+**Configuration:** [`docs/deployment/environment.md`](docs/deployment/environment.md) documents the existing workspace. Pi-specific secrets and app configuration must be added to the relevant app's environment reference when the integration is implemented; the Pi Server API key must remain server-side.
 
 ### 🔒 Security
 
